@@ -1,0 +1,76 @@
+
+@{
+    ViewBag.Title = "Create";
+}
+
+
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken() <!-- Injection de jeton anti contrefaçon de formulaire -->
+
+    <details id="courseInfo" open>
+        <summary>Informations</summary>
+        <fieldset>
+            <legend>Session</legend>
+            <input id="Session" name="Session" class="form-control" type="number" min="1" max="6" placeholder="Session entre 1 et 6" />
+            <span class="field-error" id="Session-error"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Code</legend>
+            <input class="form-control" name="Code" id="Code" placeholder="Code" />
+            <span class="field-error" id="Code-error"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Titre du cours</legend>
+            <input class="form-control" name="Title" id="Title" placeholder="Titre du cours" />
+            <span class="field-error" id="Title-error"></span>
+        </fieldset>
+
+        <input id="submit" type="submit" value="Enregistrer" class="btn btn-primary" style="display:none">
+    </details>
+
+
+}
+
+@section Scripts {
+<script>
+    $('form').attr('novalidate', true);
+
+    function showError(id, msg) {
+        $('#' + id).addClass('input-error');
+        $('#' + id + '-error').text(msg);
+    }
+    function clearError(id) {
+        $('#' + id).removeClass('input-error');
+        $('#' + id + '-error').text('');
+    }
+
+    function validate(callback) {
+        let ok = true;
+
+        const session = parseInt($('#Session').val());
+        if (!$('#Session').val() || session < 1 || session > 6) { showError('Session', 'Session doit etre entre 1 et 6'); ok = false; } else clearError('Session');
+        if (!$('#Title').val().trim()) { showError('Title', 'Titre requis'); ok = false; } else clearError('Title');
+
+        const code = $('#Code').val().trim();
+        if (!code) { showError('Code', 'Code requis'); callback(false); return; }
+        if (!ok) { callback(false); return; }
+
+        $.get('/Courses/IsCodeAvailable', { code: code, id: 0 }, function (available) {
+            if (available !== 'true') { showError('Code', 'Ce code existe deja'); callback(false); }
+            else { clearError('Code'); callback(true); }
+        });
+    }
+
+    let ready = false;
+    $('form').on('submit', function (e) {
+        if (!ready) {
+            e.preventDefault();
+            validate(function (ok) { if (ok) { ready = true; document.forms[0].submit(); } });
+        }
+    });
+</script>
+}

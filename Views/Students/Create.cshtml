@@ -1,0 +1,92 @@
+
+@{
+    ViewBag.Title = "Create";
+}
+
+
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken() <!-- Injection de jeton anti contrefaçon de formulaire -->
+
+    <details id="studentInfo" open>
+        <summary>Informations</summary>
+        <div>
+            <fieldset>
+                <legend>Prenom</legend>
+                <input id="FirstName" name="FirstName" class="form-control" placeholder="Prenom" />
+                <span class="field-error" id="FirstName-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Nom</legend>
+                <input class="form-control" name="LastName" id="LastName" placeholder="Nom" />
+                <span class="field-error" id="LastName-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Date de naissance</legend>
+                <input class="form-control" name="BirthDate" type="date" id="BirthDate" placeholder="Date de naissance" />
+                <span class="field-error" id="BirthDate-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Courriel</legend>
+                <input type="email" class="form-control" name="Email" id="Email" placeholder="Courriel" />
+                <span class="field-error" id="Email-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Telephone</legend>
+                <input class="form-control" name="Phone" id="Phone" placeholder="Telephone" />
+                <span class="field-error" id="Phone-error"></span>
+            </fieldset>
+
+            <input id="submit" type="submit" value="Enregistrer" class="btn btn-primary" style="display:none">
+        </div>
+    </details>
+
+
+}
+
+@section Scripts {
+<script>
+    $('form').attr('novalidate', true);
+
+    function showError(id, msg) {
+        $('#' + id).addClass('input-error');
+        $('#' + id + '-error').text(msg);
+    }
+    function clearError(id) {
+        $('#' + id).removeClass('input-error');
+        $('#' + id + '-error').text('');
+    }
+
+    function validate(callback) {
+        let ok = true;
+
+        if (!$('#FirstName').val().trim()) { showError('FirstName', 'Prenom requis'); ok = false; } else clearError('FirstName');
+        if (!$('#LastName').val().trim()) { showError('LastName', 'Nom requis'); ok = false; } else clearError('LastName');
+        if (!$('#BirthDate').val()) { showError('BirthDate', 'Date de naissance requise'); ok = false; } else clearError('BirthDate');
+        if (!$('#Phone').val().trim()) { showError('Phone', 'Telephone requis'); ok = false; } else clearError('Phone');
+
+        const email = $('#Email').val().trim();
+        if (!email) { showError('Email', 'Courriel requis'); callback(false); return; }
+        if (!email.includes('@@')) { showError('Email', 'Format de courriel invalide'); callback(false); return; }
+        if (!ok) { callback(false); return; }
+
+        $.get('/Students/IsEmailAvailable', { email: email, id: 0 }, function (available) {
+            if (available !== 'true') { showError('Email', 'Ce courriel est deja utilise;'); callback(false); }
+            else { clearError('Email'); callback(true); }
+        });
+    }
+
+    let ready = false;
+    $('form').on('submit', function (e) {
+        if (!ready) {
+            e.preventDefault();
+            validate(function (ok) { if (ok) { ready = true; document.forms[0].submit(); } });
+        }
+    });
+</script>
+}

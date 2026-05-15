@@ -1,0 +1,87 @@
+@model Models.Teacher
+@{
+    ViewBag.Title = "Edit";
+}
+
+
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken() <!-- Injection de jeton anti contrefaçon de formulaire -->
+
+    <details id="teacherInfo" open>
+        <summary> Informations - [@Model.Code]</summary>
+        <div class="profil-form">
+            <fieldset>
+                <legend>Prenom</legend>
+                <input id="FirstName" name="FirstName" class="form-control" placeholder="Prenom" value="@Model.FirstName" />
+                <span class="field-error" id="FirstName-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Nom</legend>
+                <input class="form-control" name="LastName" id="LastName" placeholder="Nom" value="@Model.LastName" />
+                <span class="field-error" id="LastName-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Date d&apos;embauche</legend>
+                <input class="form-control" name="StartDate" type="date" id="StartDate" placeholder="Date d&apos;embauche" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                <span class="field-error" id="StartDate-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Telephone</legend>
+                <input class="form-control" name="Phone" id="Phone" placeholder="Telephone" value="@Model.Phone" />
+                <span class="field-error" id="Phone-error"></span>
+            </fieldset>
+
+            <fieldset>
+                <legend>Avatar</legend>
+                @Helper.ImageUploader("Avatar", Model.Avatar, "Cliquez ou glissez une photo")
+            </fieldset>
+
+            <input id="submit" type="submit" value="Enregistrer" class="btn btn-primary" style="display:none">
+        </div>
+    </details>
+
+    <details id="teacherAllocations">
+        <summary>Allocation: @Models.NextSession.ShortCaption</summary>
+        @Helper.SelectionLists("selectedCoursesId", (SelectList)ViewBag.Allocations, (SelectList)ViewBag.Courses)
+    </details>
+
+}
+
+@section Scripts {
+<script>
+    $('form').attr('novalidate', true);
+
+    function showError(id, msg) {
+        $('#' + id).addClass('input-error');
+        $('#' + id + '-error').text(msg);
+    }
+    function clearError(id) {
+        $('#' + id).removeClass('input-error');
+        $('#' + id + '-error').text('');
+    }
+
+    function validate(callback) {
+        let ok = true;
+
+        if (!$('#FirstName').val().trim()) { showError('FirstName', 'Prenom requis'); ok = false; } else clearError('FirstName');
+        if (!$('#LastName').val().trim()) { showError('LastName', 'Nom requis'); ok = false; } else clearError('LastName');
+        if (!$('#StartDate').val()) { showError('StartDate', 'Date d&apos;embauche requise'); ok = false; } else clearError('StartDate');
+        if (!$('#Phone').val().trim()) { showError('Phone', 'Telephone requis'); ok = false; } else clearError('Phone');
+
+        callback(ok);
+    }
+
+    let ready = false;
+    $('form').on('submit', function (e) {
+        if (!ready) {
+            e.preventDefault();
+            validate(function (ok) { if (ok) { ready = true; document.forms[0].submit(); } });
+        }
+    });
+</script>
+}

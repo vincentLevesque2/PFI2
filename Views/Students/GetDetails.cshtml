@@ -1,0 +1,28 @@
+@model Models.Student
+
+<details id="studentDetails" open>
+    <summary>
+        <i class="fa fa-graduation-cap"></i>
+        @Model.FullName
+    </summary>
+
+    <div class="teacherInfoPanel">
+        <div class="teacherInfoRow">
+            <i class="fa fa-barcode infoIcon"></i>
+            <span>@Model.Code</span>
+        </div>
+        <div class="teacherInfoRow">
+            <i class="fa fa-phone infoIcon"></i>
+            <span>@Model.Phone</span>
+        </div>
+        <div class="teacherInfoRow">
+            <i class="fa fa-paper-plane infoIcon"></i>
+            <span>@Model.Email</span>
+        </div>
+        <div class="teacherInfoRow">
+            <i class="fa fa-calendar-days infoIcon"></i>
+            <span>@Model.BirthDate.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("fr-CA"))</span>
+        </div>
+    </div>
+
+</details>

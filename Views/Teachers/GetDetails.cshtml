@@ -1,0 +1,26 @@
+@model Models.Teacher
+
+<details id="teacherDetails" open>
+    <summary>@Model.FullName</summary>
+
+    <div class="teacherInfoPanel">
+        <div class="teacherInfoRow">
+            <i class="fa fa-barcode infoIcon"></i>
+            <span>@Model.Code</span>
+        </div>
+        <div class="teacherInfoRow">
+            <i class="fa fa-phone infoIcon"></i>
+            <span>@Model.Phone</span>
+        </div>
+        <div class="teacherInfoRow">
+            <i class="fa fa-paper-plane infoIcon"></i>
+            <span>@Model.Email</span>
+        </div>
+
+        <div>Embauche le @Model.StartDate.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("fr-CA"))</div>
+        <div>@Model.Seniority ans d'anciennete</div>
+
+        <img class="teacherAvatar" src="@(string.IsNullOrEmpty(Model.Avatar) ? "/App_Assets/teachers/no_avatar.png" : Model.Avatar)" />
+    </div>
+
+</details>

@@ -1,0 +1,80 @@
+
+@{
+    ViewBag.Title = "Create";
+}
+
+
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken() <!-- Injection de jeton anti contrefaçon de formulaire -->
+
+    <details id="teacherInfo" open>
+        <summary>Informations</summary>
+        <div class="profil-form">
+        <fieldset>
+            <legend>Prenom</legend>
+            <input id="FirstName" name="FirstName" class="form-control" placeholder="Prenom" />
+            <span class="field-error" id="FirstName-error"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Nom</legend>
+            <input class="form-control" name="LastName" id="LastName" placeholder="Nom" />
+            <span class="field-error" id="LastName-error"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Date d&apos;embauche</legend>
+            <input class="form-control" name="StartDate" type="date" id="StartDate" placeholder="Date d&apos;embauche" />
+            <span class="field-error" id="StartDate-error"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Telephone</legend>
+            <input class="form-control" name="Phone" id="Phone" placeholder="Telephone" />
+            <span class="field-error" id="Phone-error"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Avatar</legend>
+            @Helper.ImageUploader("Avatar", "", "Cliquez ou glissez une photo")
+        </fieldset>
+            </div>
+        <input id="submit" type="submit" value="Enregistrer" class="btn btn-primary" style="display:none">
+    </details>
+}
+
+@section Scripts {
+<script>
+    $('form').attr('novalidate', true);
+
+    function showError(id, msg) {
+        $('#' + id).addClass('input-error');
+        $('#' + id + '-error').text(msg);
+    }
+    function clearError(id) {
+        $('#' + id).removeClass('input-error');
+        $('#' + id + '-error').text('');
+    }
+
+    function validate(callback) {
+        let ok = true;
+
+        if (!$('#FirstName').val().trim()) { showError('FirstName', 'Prenom requis'); ok = false; } else clearError('FirstName');
+        if (!$('#LastName').val().trim()) { showError('LastName', 'Nom requis'); ok = false; } else clearError('LastName');
+        if (!$('#StartDate').val()) { showError('StartDate', 'Date d&apos;embauche requise'); ok = false; } else clearError('StartDate');
+        if (!$('#Phone').val().trim()) { showError('Phone', 'Telephone requis'); ok = false; } else clearError('Phone');
+
+        callback(ok);
+    }
+
+    let ready = false;
+    $('form').on('submit', function (e) {
+        if (!ready) {
+            e.preventDefault();
+            validate(function (ok) { if (ok) { ready = true; document.forms[0].submit(); } });
+        }
+    });
+</script>
+}

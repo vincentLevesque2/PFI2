@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div id="TeacherListPanel">
+
+</div>
+@section Scripts {
+    <script>
+
+        let listAutoRefreshPanel =
+            new AutoRefreshedPanel(
+                "TeacherListPanel",
+                "/Teachers/GetTeachers",
+                5,
+                teachersListPostRefresh);
+
+        function teachersListPostRefresh() {
+          
+        }
+    </script>
+}
